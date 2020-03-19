@@ -1,0 +1,46 @@
+/*
+*   MIT License
+*
+*   Copyright (c) 2020 Anna Klingberg Brondin and Marcus Nordström
+*/
+#include "scoringStage.h"
+#include <stdio.h>
+static ring_buffer_t *smoothBuf;
+static ring_buffer_t *peakScoreBuf;
+static int windowSize = 35;
+
+void initScoringStage(ring_buffer_t *smoothBufIn, ring_buffer_t *peakScoreBufIn)
+{
+    smoothBuf = smoothBufIn;
+    peakScoreBuf = peakScoreBufIn;
+}
+
+void scoringStage(void)
+{
+    if (ring_buffer_num_items(smoothBuf) == windowSize)
+    {
+        ring_buffer_size_t size = ring_buffer_num_items(smoothBuf);
+        ring_buffer_size_t midpoint = ring_buffer_num_items(smoothBuf) / 2;
+        float diffLeft = 0;
+        float diffRight = 0;
+        data_point_t midpointData;
+        //float midpointData;
+        ring_buffer_peek(smoothBuf, &midpointData, midpoint);
+        data_point_t dataPoint;
+        for (ring_buffer_size_t i = 0; i < midpoint; i++)
+        {
+            ring_buffer_peek(smoothBuf, &dataPoint, i);
+            diffLeft += midpointData.magnitude - dataPoint.magnitude;
+        }
+        for (ring_buffer_size_t j = midpoint + 1; j < size; j++)
+        {
+            ring_buffer_peek(smoothBuf, &dataPoint, j);
+            diffRight += midpointData.magnitude - dataPoint.magnitude;
+        }
+        float scorePeak = (diffLeft + diffRight) / (windowSize - 1);
+        printf("scoring = %f\n", scorePeak);
+        data_point_t out = {midpointData.time, scorePeak};
+        ring_buffer_queue(peakScoreBuf, out);
+        ring_buffer_dequeue(smoothBuf, &midpointData);
+    }
+}
