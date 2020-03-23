@@ -30,7 +30,6 @@ SOFTWARE.
 #include "postProcessingStage.h"
 // General data
 static int steps;
-static int sampleFreq;
 // Buffers
 static ring_buffer_t rawBuf;
 static ring_buffer_t ppBuf;
@@ -38,9 +37,13 @@ static ring_buffer_t smoothBuf;
 static ring_buffer_t peakScoreBuf;
 static ring_buffer_t peakBuf;
 
-void initAlgo(int sampleFreqIn)
+static void increaseStepCallback(void)
 {
-    sampleFreq = sampleFreqIn;
+    steps++;
+}
+
+void initAlgo()
+{
     ring_buffer_init(&rawBuf);
     ring_buffer_init(&ppBuf);
     initPreProcessStage(&rawBuf, &ppBuf);
@@ -50,10 +53,10 @@ void initAlgo(int sampleFreqIn)
     initScoringStage(&smoothBuf, &peakScoreBuf);
     ring_buffer_init(&peakBuf);
     initDetectionStage(&peakScoreBuf, &peakBuf);
-    initPostProcessingStage(&peakBuf, &steps);
+    initPostProcessingStage(&peakBuf, &increaseStepCallback);
 }
 
-void processSample(long time, float x, float y, float z)
+void processSample(long time, long x, long y, long z)
 {
     preProcessSample(time, x, y, z);
 }
@@ -68,7 +71,3 @@ int getSteps(void)
     return steps;
 }
 
-int getSampleFreq()
-{
-    return sampleFreq;
-}

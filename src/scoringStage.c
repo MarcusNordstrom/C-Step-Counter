@@ -40,8 +40,8 @@ void scoringStage(void)
     {
         ring_buffer_size_t size = ring_buffer_num_items(smoothBuf);
         ring_buffer_size_t midpoint = ring_buffer_num_items(smoothBuf) / 2;
-        float diffLeft = 0;
-        float diffRight = 0;
+        long diffLeft = 0;
+        long diffRight = 0;
         data_point_t midpointData;
         //float midpointData;
         ring_buffer_peek(smoothBuf, &midpointData, midpoint);
@@ -56,7 +56,7 @@ void scoringStage(void)
             ring_buffer_peek(smoothBuf, &dataPoint, j);
             diffRight += midpointData.magnitude - dataPoint.magnitude;
         }
-        float scorePeak = (diffLeft + diffRight) / (windowSize - 1);
+        long scorePeak = (diffLeft + diffRight) / (windowSize - 1);
         data_point_t out;
         out.time = midpointData.time;
         out.magnitude = scorePeak;

@@ -37,7 +37,7 @@ SOFTWARE.
 typedef struct data_point_t data_point_t;
 
 struct data_point_t {
-  float magnitude;
+  long magnitude;
   long time;
 };
 /**

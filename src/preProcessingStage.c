@@ -43,20 +43,20 @@ static data_point_t linearInterpolate(data_point_t dp1, data_point_t dp2, long i
     //float dt = (float) dp2.time - dp1.time;
     //float dv = dp2.magnitude - dp1.magnitude;
     //float mag = (dv/dt) * ((float)interpTime - dp1.time) + dp1.magnitude;
-    float mag = dp1.magnitude + ((dp2.magnitude - dp1.magnitude) / ((float)(dp2.time - dp1.time))) * (interpTime - dp1.time);
+    long mag = (long) (dp1.magnitude + ((dp2.magnitude - dp1.magnitude) / ((float)(dp2.time - dp1.time))) * (interpTime - dp1.time));
     data_point_t interp;
     interp.time = interpTime;
     interp.magnitude = mag;
     return interp;
 }
 
-void preProcessSample(long time, float x, float y, float z)
+void preProcessSample(long time, long x, long y, long z)
 {
     if (startTime == -1) //first point handler
     {
         startTime = time;
     }
-    double magnitude = sqrt((double)(x * x) + (y * y) + (z * z));
+    long magnitude = (long)sqrt((double)(x * x) + (y * y) + (z * z));
     data_point_t dataPoint;
     dataPoint.time = (time-startTime)/timeScalingFactor;
     dataPoint.magnitude = magnitude;

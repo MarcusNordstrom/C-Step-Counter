@@ -25,7 +25,10 @@ SOFTWARE.
 #ifndef STEP_COUNTING_ALGO_H
 #define STEP_COUNTING_ALGO_H
 
-void initAlgo(int sampleFreq);
+/*
+    Initializes all buffers and everything the algorithm needs
+*/
+void initAlgo();
 
 /*
     This function takes the raw accelerometry data and computes the entire algorithm
@@ -34,7 +37,7 @@ void initAlgo(int sampleFreq);
     @param y, the y axis
     @param z, the z axis
 */
-void processSample(long time, float x, float y, float z);
+void processSample(long time, long x, long y, long z);
 
 /*
     Sets the filter coefficiants for the FIR-filter, these can be calculated using the script

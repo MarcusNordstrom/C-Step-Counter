@@ -26,6 +26,6 @@ SOFTWARE.
 #include "ringbuffer.h"
 
 void initPreProcessStage(ring_buffer_t *rawBuf, ring_buffer_t *ppBuf);
-void preProcessSample(long time, float x, float y, float z);
+void preProcessSample(long time, long x, long y, long z);
 
 #endif

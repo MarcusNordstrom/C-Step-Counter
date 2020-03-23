@@ -25,13 +25,13 @@ SOFTWARE.
 #include "postProcessingStage.h"
 #include <stdio.h>
 static ring_buffer_t *peakBuf;
-static int steps = 0;
 static data_point_t lastDataPoint;
 static int timeThreshold = 200; //200
-void initPostProcessingStage(ring_buffer_t *peakBufIn, int *stepsIn)
+static void (*stepCallback)(void);
+void initPostProcessingStage(ring_buffer_t *peakBufIn, void (* stepCallbackIn)(void))
 {
     peakBuf = peakBufIn;
-    //steps = stepsIn;
+    stepCallback = stepCallbackIn;
     lastDataPoint.time = 0;
     lastDataPoint.magnitude = 0;
 }
@@ -51,8 +51,7 @@ void postProcessingStage(void)
             if ((dataPoint.time - lastDataPoint.time) > timeThreshold)
             {
                 lastDataPoint = dataPoint;
-                steps++;
-                printf("steps = %i\n", steps);
+                (*stepCallback)();
             }
             else
             {

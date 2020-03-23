@@ -28,10 +28,10 @@ SOFTWARE.
 #include <stdio.h>
 static ring_buffer_t *peakScoreBuf;
 static ring_buffer_t *peakBuf;
-static float mean = 0;
-static float std = 0;
+static long mean = 0;
+static long std = 0;
 static int count = 0;
-static float threshold = 1.2;
+//static float threshold = 1.2;
 
 void initDetectionStage(ring_buffer_t *peakScoreBufIn, ring_buffer_t *peakBufIn)
 {
@@ -43,7 +43,7 @@ void detectionStage(void)
 {
     if (!ring_buffer_is_empty(peakScoreBuf))
     {
-        float oMean = mean;
+        long oMean = mean;
         data_point_t dataPoint;
         ring_buffer_dequeue(peakScoreBuf, &dataPoint);
         count++;
@@ -55,31 +55,16 @@ void detectionStage(void)
         else if (count == 2)
         {
             mean = (mean + dataPoint.magnitude) / 2;
-            std = (float)sqrt(pow(dataPoint.magnitude - mean, 2) + pow(oMean - mean, 2)) / 2;
+            std = (long)sqrt(pow(dataPoint.magnitude - mean, 2) + pow(oMean - mean, 2)) / 2;
         }
         else
         {
             mean = (dataPoint.magnitude + ((count - 1) * mean)) / count;
-            std = (float)sqrt(((count - 2) * pow(std, 2) / (count - 1)) + pow(oMean - mean, 2) + pow(dataPoint.magnitude - mean, 2) / count);
+            std = (long)sqrt(((count - 2) * pow(std, 2) / (count - 1)) + pow(oMean - mean, 2) + pow(dataPoint.magnitude - mean, 2) / count);
         }
-        /*switch (count)
-        {
-        case 1:
-            mean = dataPoint.magnitude;
-            std = 0;
-            break;
-        case 2:
-            mean = (mean + dataPoint.magnitude) / 2;
-            std = (float)sqrt(pow(dataPoint.magnitude - mean, 2) + pow(oMean - mean, 2)) / 2;
-            break;
-        default:
-            mean = (dataPoint.magnitude + ((count - 1) * mean)) / count;
-            std = (float)sqrt(((count - 2) * pow(std, 2) / (count - 1)) + pow(oMean - mean, 2) + pow(dataPoint.magnitude - mean, 2) / count);
-            break;
-        }*/
         if (count > 15)
         {
-            if ((dataPoint.magnitude - mean) > std * threshold)
+            if ((dataPoint.magnitude - mean) > (std + std/5)) //std * 1.2 -> std + std/5
             {
                 // This is a peak
                 ring_buffer_queue(peakBuf, dataPoint);

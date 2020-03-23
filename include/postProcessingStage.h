@@ -26,7 +26,7 @@ SOFTWARE.
 #include "ringbuffer.h"
 
 
-void initPostProcessingStage(ring_buffer_t *peakBuf, int *steps);
+void initPostProcessingStage(ring_buffer_t *peakBuf, void (* stepCallback)(void));
 void postProcessingStage(void);
 
 #endif
