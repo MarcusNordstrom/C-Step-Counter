@@ -23,10 +23,10 @@ SOFTWARE.
 */
 #include "scoringStage.h"
 #include "detectionStage.h"
-#include <stdio.h>
 static ring_buffer_t *smoothBuf;
 static ring_buffer_t *peakScoreBuf;
-static int windowSize = 35;
+static ring_buffer_size_t windowSize = 35;
+static ring_buffer_size_t midpoint = 17; //half of size
 
 void initScoringStage(ring_buffer_t *smoothBufIn, ring_buffer_t *peakScoreBufIn)
 {
@@ -38,12 +38,9 @@ void scoringStage(void)
 {
     if (ring_buffer_num_items(smoothBuf) == windowSize)
     {
-        ring_buffer_size_t size = ring_buffer_num_items(smoothBuf);
-        ring_buffer_size_t midpoint = ring_buffer_num_items(smoothBuf) / 2;
         long diffLeft = 0;
         long diffRight = 0;
         data_point_t midpointData;
-        //float midpointData;
         ring_buffer_peek(smoothBuf, &midpointData, midpoint);
         data_point_t dataPoint;
         for (ring_buffer_size_t i = 0; i < midpoint; i++)
@@ -51,7 +48,7 @@ void scoringStage(void)
             ring_buffer_peek(smoothBuf, &dataPoint, i);
             diffLeft += midpointData.magnitude - dataPoint.magnitude;
         }
-        for (ring_buffer_size_t j = midpoint + 1; j < size; j++)
+        for (ring_buffer_size_t j = midpoint + 1; j < windowSize; j++)
         {
             ring_buffer_peek(smoothBuf, &dataPoint, j);
             diffRight += midpointData.magnitude - dataPoint.magnitude;

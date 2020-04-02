@@ -21,44 +21,38 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#ifndef STEP_COUNTING_ALGO_UTILS_H
+#define STEP_COUNTING_ALGO_UTILS_H
 
-#include "postProcessingStage.h"
-static ring_buffer_t *peakBuf;
-static data_point_t lastDataPoint;
-static int timeThreshold = 200;
-static void (*stepCallback)(void);
-void initPostProcessingStage(ring_buffer_t *peakBufIn, void (* stepCallbackIn)(void))
+static long isqrt(long number)
 {
-    peakBuf = peakBufIn;
-    stepCallback = stepCallbackIn;
-    lastDataPoint.time = 0;
-    lastDataPoint.magnitude = 0;
-}
-
-void postProcessingStage(void)
-{
-    if (!ring_buffer_is_empty(peakBuf))
+  long base, i, y;
+  base = 67108864; //2^24
+  y = 0;
+  for (i = 1; i <= 24; i++)
+  {
+    y += base;
+    if ((y * y) > number)
     {
-        data_point_t dataPoint;
-        ring_buffer_dequeue(peakBuf, &dataPoint);
-        if (lastDataPoint.time == 0)
-        {
-            lastDataPoint = dataPoint;
-        }
-        else
-        {
-            if ((dataPoint.time - lastDataPoint.time) > timeThreshold)
-            {
-                lastDataPoint = dataPoint;
-                (*stepCallback)();
-            }
-            else
-            {
-                if (dataPoint.magnitude > lastDataPoint.magnitude)
-                {
-                    lastDataPoint = dataPoint;
-                }
-            }
-        }
+      y -= base; // base should not have been added, so we substract again
     }
+    base = base >> 1; // shift 1 digit to the right = divide by 2
+  }
+  return y;
 }
+
+/*static long isqrt(long number)
+{ //http://www.codecodex.com/wiki/Calculate_an_integer_square_root#C
+  unsigned long n = 1;
+  unsigned long n1 = ((n + (number / n)) >> 1);
+
+  while (n1 - n > 1)
+  {
+    n = n1;
+    n1 = ((n + (number / n)) >> 1);
+  }
+  while (n1 * n1 > number)
+    n1--;
+  return (long)n1;
+}*/
+#endif

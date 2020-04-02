@@ -24,19 +24,11 @@ SOFTWARE.
 
 #include "filterStage.h"
 #include "scoringStage.h"
-#include <stdio.h>
 static ring_buffer_t *ppBuf;
 static ring_buffer_t *smoothBuf;
 static long coeffs[13] = {1687988, 58749795, 16299118, 36044776, 63539094, 8928125, 100000000, 8928125, 63539094, 36044776, 16299118, 58749795, 1687988};
 static long filterSum = 525454400;
-//static float coeffs[13] = {0.01687988, 0.058749795, 0.16299118, 0.36044776, 0.63539094, 0.8928125, 1.0, 0.8928125, 0.63539094, 0.36044776, 0.16299118, 0.058749795, 0.01687988};
-//static float filterSum = 5.254544;
 static int filterLen = 13;
-/*static float coeffs[20] = {0.03035425209, 0.03562249988, 0.040788766, 0.04571138322, 0.05024948716,
-                           0.05426871777, 0.05764679983, 0.06027878076, 0.06208159775, 0.06299771369,
-                           0.06299771369, 0.06208159775, 0.06027878076, 0.05764679983, 0.05426871777,
-                           0.05024948716, 0.04571138322, 0.040788766, 0.03562249988, 0.03035425209};
-static int filterLen = 20;*/
 
 void
 initFilterStage(ring_buffer_t * ppBufIn, ring_buffer_t *smoothBufIn)

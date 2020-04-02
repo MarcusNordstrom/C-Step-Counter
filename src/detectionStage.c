@@ -24,14 +24,13 @@ SOFTWARE.
 
 #include "detectionStage.h"
 #include "postProcessingStage.h"
-#include <math.h>
-#include <stdio.h>
+#include "utils.h"
 static ring_buffer_t *peakScoreBuf;
 static ring_buffer_t *peakBuf;
 static long mean = 0;
 static long std = 0;
 static int count = 0;
-//static float threshold = 1.2;
+//static float threshold = 1.2; NOTE: moved into code
 
 void initDetectionStage(ring_buffer_t *peakScoreBufIn, ring_buffer_t *peakBufIn)
 {
@@ -55,22 +54,27 @@ void detectionStage(void)
         else if (count == 2)
         {
             mean = (mean + dataPoint.magnitude) / 2;
-            std = (long)sqrt(pow(dataPoint.magnitude - mean, 2) + pow(oMean - mean, 2)) / 2;
+            std = isqrt(((dataPoint.magnitude - mean) * (dataPoint.magnitude - mean)) + ((oMean - mean) * (oMean - mean))) / 2;
         }
         else
         {
             mean = (dataPoint.magnitude + ((count - 1) * mean)) / count;
-            std = (long)sqrt(((count - 2) * pow(std, 2) / (count - 1)) + pow(oMean - mean, 2) + pow(dataPoint.magnitude - mean, 2) / count);
+            //Split into parts to avoid overflow
+            unsigned long part1 = ((std*std) / (count-1)) * (count-2);
+            unsigned long part2 = ((oMean - mean) * (oMean - mean));
+            unsigned long part3 = ((dataPoint.magnitude - mean) * (dataPoint.magnitude - mean)) / count;
+            std = isqrt(part1 + part2 + part3);
         }
         if (count > 15)
         {
-            if ((dataPoint.magnitude - mean) > (std + std/5)) //std * 1.2 -> std + std/5
+            if ((dataPoint.magnitude - mean) > (std + std / 5)) //std * 1.2 -> std + std/5
             {
                 // This is a peak
                 ring_buffer_queue(peakBuf, dataPoint);
                 postProcessingStage();
-                //printf("detection = %f\n", dataPoint.magnitude);
             }
         }
     }
 }
+
+

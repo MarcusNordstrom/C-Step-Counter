@@ -23,14 +23,17 @@ SOFTWARE.
 */
 #include "preProcessingStage.h"
 #include "filterStage.h"
-#include <math.h>
-#include <stdio.h>
 static ring_buffer_t *rawBuf;
 static ring_buffer_t *ppBuf;
-static int interpolationTime = 10; //in ms
-static float timeScalingFactor = 1000000; //(100000 for validation data)
+static int interpolationTime = 10;       //in ms
+static float timeScalingFactor = 1000000; //(100000 for validation data) 1000000
 static float startTime = -1;
 static int interpolationCount = 0;
+
+static inline long labs(long num)
+{
+    return (num < 0) ? num * -1 : num;
+}
 
 void initPreProcessStage(ring_buffer_t *rawBufIn, ring_buffer_t *ppBufIn)
 {
@@ -40,10 +43,7 @@ void initPreProcessStage(ring_buffer_t *rawBufIn, ring_buffer_t *ppBufIn)
 
 static data_point_t linearInterpolate(data_point_t dp1, data_point_t dp2, long interpTime)
 {
-    //float dt = (float) dp2.time - dp1.time;
-    //float dv = dp2.magnitude - dp1.magnitude;
-    //float mag = (dv/dt) * ((float)interpTime - dp1.time) + dp1.magnitude;
-    long mag = (long) (dp1.magnitude + ((dp2.magnitude - dp1.magnitude) / ((float)(dp2.time - dp1.time))) * (interpTime - dp1.time));
+    long mag = (dp1.magnitude + ((dp2.magnitude - dp1.magnitude) / (dp2.time - dp1.time)) * (interpTime - dp1.time));
     data_point_t interp;
     interp.time = interpTime;
     interp.magnitude = mag;
@@ -56,9 +56,10 @@ void preProcessSample(long time, long x, long y, long z)
     {
         startTime = time;
     }
-    long magnitude = (long)sqrt((double)(x * x) + (y * y) + (z * z));
+    long magnitude = (labs(x * x) + labs(y * y) + labs(z * z)) / (labs(x) + labs(y) + labs(z));
+    //long magnitude = isqrt(x*x+y*y+z*z); //Original
     data_point_t dataPoint;
-    dataPoint.time = (time-startTime)/timeScalingFactor;
+    dataPoint.time = (time - startTime) / timeScalingFactor;
     dataPoint.magnitude = magnitude;
     ring_buffer_queue(rawBuf, dataPoint);
     if (ring_buffer_num_items(rawBuf) >= 2)
@@ -67,11 +68,10 @@ void preProcessSample(long time, long x, long y, long z)
         data_point_t dp2;
         ring_buffer_peek(rawBuf, &dp1, 0);
         ring_buffer_peek(rawBuf, &dp2, 1);
-        int numberOfPoints = (int)ceil((double)(dp2.time - dp1.time) / interpolationTime);
+        int numberOfPoints = 1 + ((((dp2.time - dp1.time)) - 1) / interpolationTime); //celing function
         for (int i = 0; i < numberOfPoints; i++)
         {
-            //long interpTime = (long)dp1.time + i * ((dp2.time - dp1.time) / numberOfPoints);
-            long interpTime = (long) interpolationCount * interpolationTime;
+            long interpTime = (long)interpolationCount * interpolationTime;
             if (dp1.time <= interpTime && interpTime < dp2.time)
             {
                 data_point_t interpolated = linearInterpolate(dp1, dp2, interpTime);
@@ -83,6 +83,4 @@ void preProcessSample(long time, long x, long y, long z)
         data_point_t dataPoint;
         ring_buffer_dequeue(rawBuf, &dataPoint);
     }
-
-    //printf("preProcess = %f\n", magnitude);
 }
