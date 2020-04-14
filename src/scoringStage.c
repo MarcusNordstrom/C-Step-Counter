@@ -62,3 +62,9 @@ void scoringStage(void)
         detectionStage();
     }
 }
+
+void changeWindowSize(ring_buffer_size_t windowsize)
+{
+    windowSize = windowsize;
+    midpoint = windowsize / 2;
+}

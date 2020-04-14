@@ -23,10 +23,11 @@ SOFTWARE.
 */
 #ifndef STEP_COUNTING_ALGO_UTILS_H
 #define STEP_COUNTING_ALGO_UTILS_H
+#include <stdint.h>
 
-static long isqrt(long number)
+static int64_t isqrt(int64_t number)
 {
-  long base, i, y;
+  int64_t base, i, y;
   base = 67108864; //2^24
   y = 0;
   for (i = 1; i <= 24; i++)

@@ -23,17 +23,18 @@ SOFTWARE.
 */
 #include "preProcessingStage.h"
 #include "filterStage.h"
+#include "utils.h"
 static ring_buffer_t *rawBuf;
 static ring_buffer_t *ppBuf;
 static int interpolationTime = 10;       //in ms
-static float timeScalingFactor = 1000000; //(100000 for validation data) 1000000
+static float timeScalingFactor = 1; //(100000 for validation data) 1000000
 static float startTime = -1;
 static int interpolationCount = 0;
 
-static inline long labs(long num)
-{
-    return (num < 0) ? num * -1 : num;
-}
+//static inline long labs(long num)
+//{
+//    return (num < 0) ? -num : num;
+//}
 
 void initPreProcessStage(ring_buffer_t *rawBufIn, ring_buffer_t *ppBufIn)
 {
@@ -56,8 +57,9 @@ void preProcessSample(long time, long x, long y, long z)
     {
         startTime = time;
     }
-    long magnitude = (labs(x * x) + labs(y * y) + labs(z * z)) / (labs(x) + labs(y) + labs(z));
-    //long magnitude = isqrt(x*x+y*y+z*z); //Original
+    //long magnitude = (labs(x * x) + labs(y * y) + labs(z * z)) / (labs(x) + labs(y) + labs(z));
+    long magnitude = isqrt(x*x+y*y+z*z); //Original
+    //long magnitude = (long)sqrt((x*x)+(y*y)+(z*z));
     data_point_t dataPoint;
     dataPoint.time = (time - startTime) / timeScalingFactor;
     dataPoint.magnitude = magnitude;
@@ -83,4 +85,10 @@ void preProcessSample(long time, long x, long y, long z)
         data_point_t dataPoint;
         ring_buffer_dequeue(rawBuf, &dataPoint);
     }
+}
+
+void resetPreProcess(void)
+{
+    startTime = -1;
+    interpolationCount = 0;
 }

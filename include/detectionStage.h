@@ -28,5 +28,10 @@ SOFTWARE.
 
 void initDetectionStage(ring_buffer_t *peakScoreBuf, ring_buffer_t *peakBuf);
 void detectionStage(void);
+void resetDetection(void);
+
+#ifdef DEBUG
+void changeDetectionThreshold(int whole, int frac);
+#endif
 
 #endif

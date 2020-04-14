@@ -25,12 +25,14 @@ SOFTWARE.
 #include "detectionStage.h"
 #include "postProcessingStage.h"
 #include "utils.h"
+//#include <math.h>
 static ring_buffer_t *peakScoreBuf;
 static ring_buffer_t *peakBuf;
 static long mean = 0;
 static long std = 0;
 static int count = 0;
-//static float threshold = 1.2; NOTE: moved into code
+static int threshold_int = 1;
+static int threshold_frac = 5;
 
 void initDetectionStage(ring_buffer_t *peakScoreBufIn, ring_buffer_t *peakBufIn)
 {
@@ -55,6 +57,7 @@ void detectionStage(void)
         {
             mean = (mean + dataPoint.magnitude) / 2;
             std = isqrt(((dataPoint.magnitude - mean) * (dataPoint.magnitude - mean)) + ((oMean - mean) * (oMean - mean))) / 2;
+            //std = (long)sqrt(pow(dataPoint.magnitude - mean, 2) + pow(oMean - mean, 2)) / 2;
         }
         else
         {
@@ -64,10 +67,11 @@ void detectionStage(void)
             unsigned long part2 = ((oMean - mean) * (oMean - mean));
             unsigned long part3 = ((dataPoint.magnitude - mean) * (dataPoint.magnitude - mean)) / count;
             std = isqrt(part1 + part2 + part3);
+            //std = (long)sqrt(((count - 2) * pow(std, 2) / (count - 1)) + pow(oMean - mean, 2) + pow(dataPoint.magnitude - mean, 2) / count);
         }
         if (count > 15)
         {
-            if ((dataPoint.magnitude - mean) > (std + std / 5)) //std * 1.2 -> std + std/5
+            if ((dataPoint.magnitude - mean) > (std*threshold_int + (std/threshold_frac)))
             {
                 // This is a peak
                 ring_buffer_queue(peakBuf, dataPoint);
@@ -77,4 +81,15 @@ void detectionStage(void)
     }
 }
 
+void resetDetection(void)
+{
+    std = 0;
+    mean = 0;
+    count = 0;
+}
 
+void changeDetectionThreshold(int whole, int frac)
+{
+    threshold_int = whole;
+    threshold_frac = frac;
+}

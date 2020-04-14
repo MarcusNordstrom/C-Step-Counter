@@ -28,4 +28,8 @@ SOFTWARE.
 void initScoringStage(ring_buffer_t *smoothBuf, ring_buffer_t *peakScoreBuf);
 void scoringStage(void);
 
+#ifdef DEBUG
+void changeWindowSize(ring_buffer_size_t windowSize);
+#endif
+
 #endif

@@ -27,5 +27,6 @@ SOFTWARE.
 
 void initPreProcessStage(ring_buffer_t *rawBuf, ring_buffer_t *ppBuf);
 void preProcessSample(long time, long x, long y, long z);
+void resetPreProcess(void);
 
 #endif

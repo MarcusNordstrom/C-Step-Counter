@@ -27,7 +27,7 @@ static ring_buffer_t *peakBuf;
 static data_point_t lastDataPoint;
 static int timeThreshold = 200;
 static void (*stepCallback)(void);
-void initPostProcessingStage(ring_buffer_t *peakBufIn, void (* stepCallbackIn)(void))
+void initPostProcessingStage(ring_buffer_t *peakBufIn, void (*stepCallbackIn)(void))
 {
     peakBuf = peakBufIn;
     stepCallback = stepCallbackIn;
@@ -61,4 +61,15 @@ void postProcessingStage(void)
             }
         }
     }
+}
+
+void resetPostProcess(void)
+{
+    lastDataPoint.magnitude = 0;
+    lastDataPoint.time = 0;
+}
+
+void changeTimeThreshold(int thresh)
+{
+    timeThreshold = thresh;
 }

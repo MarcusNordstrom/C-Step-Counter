@@ -24,7 +24,6 @@ SOFTWARE.
 
 #ifndef STEP_COUNTING_ALGO_H
 #define STEP_COUNTING_ALGO_H
-
 /**
     Initializes all buffers and everything the algorithm needs
 */
@@ -52,15 +51,14 @@ void setFilterCoeffs(float *coeffs, int len);
 void resetSteps(void);
 
 /**
+    Resets the entire algorithm
+*/
+void resetAlgo(void);
+
+/**
     Returns the number of walked steps
     @return steps walked
 */
 int getSteps(void);
-
-/**
-    Retuns the current sample frequency
-    @return sample frequency    
-*/
-int getSampleFreq(void);
 
 #endif

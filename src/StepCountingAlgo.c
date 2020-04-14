@@ -66,6 +66,18 @@ void resetSteps(void)
     steps = 0;
 }
 
+void resetAlgo(void)
+{
+    resetPreProcess();
+    resetDetection();
+    resetPostProcess();
+    ring_buffer_init(&rawBuf);
+    ring_buffer_init(&ppBuf);
+    ring_buffer_init(&smoothBuf);
+    ring_buffer_init(&peakScoreBuf);
+    ring_buffer_init(&peakBuf);
+}
+
 int getSteps(void)
 {
     return steps;

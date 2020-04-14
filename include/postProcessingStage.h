@@ -28,5 +28,10 @@ SOFTWARE.
 
 void initPostProcessingStage(ring_buffer_t *peakBuf, void (* stepCallback)(void));
 void postProcessingStage(void);
+void resetPostProcess(void);
+
+#ifdef DEBUG
+void changeTimeThreshold(int thresh);
+#endif
 
 #endif
