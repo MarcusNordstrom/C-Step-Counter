@@ -24,6 +24,7 @@ SOFTWARE.
 
 #ifndef STEP_COUNTING_ALGO_H
 #define STEP_COUNTING_ALGO_H
+#include <stdint.h>
 /**
     Initializes all buffers and everything the algorithm needs
 */
@@ -36,14 +37,7 @@ void initAlgo();
     @param y, the y axis
     @param z, the z axis
 */
-void processSample(long time, long x, long y, long z);
-
-/**
-    Sets the filter coefficiants for the FIR-filter, these can be calculated using the script
-    @param coeffs, a memory allocated array of coefficiants, DO NOT FREE MANUALLY
-    @param len, the length of the array.
-*/
-void setFilterCoeffs(float *coeffs, int len);
+void processSample(int64_t time, int32_t x, int32_t y, int32_t z);
 
 /**
     Resets the number of walked steps
@@ -59,6 +53,6 @@ void resetAlgo(void);
     Returns the number of walked steps
     @return steps walked
 */
-int getSteps(void);
+int32_t getSteps(void);
 
 #endif

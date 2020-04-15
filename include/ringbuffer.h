@@ -37,8 +37,8 @@ SOFTWARE.
 typedef struct data_point_t data_point_t;
 
 struct data_point_t {
-  long magnitude;
-  long time;
+  int64_t magnitude;
+  int64_t time;
 };
 /**
  * The size of a ring buffer.

@@ -26,9 +26,9 @@ SOFTWARE.
 #include "scoringStage.h"
 static ring_buffer_t *ppBuf;
 static ring_buffer_t *smoothBuf;
-static long coeffs[13] = {1687988, 58749795, 16299118, 36044776, 63539094, 8928125, 100000000, 8928125, 63539094, 36044776, 16299118, 58749795, 1687988};
-static long filterSum = 525454400;
-static int filterLen = 13;
+static int32_t coeffs[13] = {1687988, 58749795, 16299118, 36044776, 63539094, 8928125, 100000000, 8928125, 63539094, 36044776, 16299118, 58749795, 1687988};
+static int32_t filterSum = 525454400;
+static int8_t filterLen = 13;
 
 void
 initFilterStage(ring_buffer_t * ppBufIn, ring_buffer_t *smoothBufIn)
@@ -41,9 +41,9 @@ void filterStage(void)
 {
     if (ring_buffer_num_items(ppBuf) == filterLen)
     {
-        long sum = 0;
+        int64_t sum = 0;
         data_point_t dataPoint;
-        for (int i = 0; i < filterLen; i++)
+        for (int8_t i = 0; i < filterLen; i++)
         {
             ring_buffer_peek(ppBuf, &dataPoint, i);
             sum += dataPoint.magnitude * coeffs[i];

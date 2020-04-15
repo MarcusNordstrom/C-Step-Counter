@@ -29,7 +29,7 @@ SOFTWARE.
 #include "detectionStage.h"
 #include "postProcessingStage.h"
 // General data
-static int steps;
+static int32_t steps;
 // Buffers
 static ring_buffer_t rawBuf;
 static ring_buffer_t ppBuf;
@@ -56,7 +56,7 @@ void initAlgo()
     initPostProcessingStage(&peakBuf, &increaseStepCallback);
 }
 
-void processSample(long time, long x, long y, long z)
+void processSample(int64_t time, int32_t x, int32_t y, int32_t z)
 {
     preProcessSample(time, x, y, z);
 }
@@ -78,7 +78,7 @@ void resetAlgo(void)
     ring_buffer_init(&peakBuf);
 }
 
-int getSteps(void)
+int32_t getSteps(void)
 {
     return steps;
 }

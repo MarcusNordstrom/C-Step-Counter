@@ -28,11 +28,11 @@ SOFTWARE.
 //#include <math.h>
 static ring_buffer_t *peakScoreBuf;
 static ring_buffer_t *peakBuf;
-static long mean = 0;
-static long std = 0;
-static int count = 0;
-static int threshold_int = 1;
-static int threshold_frac = 5;
+static int64_t mean = 0;
+static int64_t std = 0;
+static int64_t count = 0;
+static int16_t threshold_int = 1;
+static int16_t threshold_frac = 5;
 
 void initDetectionStage(ring_buffer_t *peakScoreBufIn, ring_buffer_t *peakBufIn)
 {
@@ -63,9 +63,9 @@ void detectionStage(void)
         {
             mean = (dataPoint.magnitude + ((count - 1) * mean)) / count;
             //Split into parts to avoid overflow
-            unsigned long part1 = ((std*std) / (count-1)) * (count-2);
-            unsigned long part2 = ((oMean - mean) * (oMean - mean));
-            unsigned long part3 = ((dataPoint.magnitude - mean) * (dataPoint.magnitude - mean)) / count;
+            int64_t part1 = ((std*std) / (count-1)) * (count-2);
+            int64_t part2 = ((oMean - mean) * (oMean - mean));
+            int64_t part3 = ((dataPoint.magnitude - mean) * (dataPoint.magnitude - mean)) / count;
             std = isqrt(part1 + part2 + part3);
             //std = (long)sqrt(((count - 2) * pow(std, 2) / (count - 1)) + pow(oMean - mean, 2) + pow(dataPoint.magnitude - mean, 2) / count);
         }
@@ -88,7 +88,7 @@ void resetDetection(void)
     count = 0;
 }
 
-void changeDetectionThreshold(int whole, int frac)
+void changeDetectionThreshold(int16_t whole, int16_t frac)
 {
     threshold_int = whole;
     threshold_frac = frac;

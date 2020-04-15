@@ -31,7 +31,7 @@ void postProcessingStage(void);
 void resetPostProcess(void);
 
 #ifdef DEBUG
-void changeTimeThreshold(int thresh);
+void changeTimeThreshold(int16_t thresh);
 #endif
 
 #endif

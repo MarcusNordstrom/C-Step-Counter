@@ -31,7 +31,7 @@ void detectionStage(void);
 void resetDetection(void);
 
 #ifdef DEBUG
-void changeDetectionThreshold(int whole, int frac);
+void changeDetectionThreshold(int16_t whole, int16_t frac);
 #endif
 
 #endif

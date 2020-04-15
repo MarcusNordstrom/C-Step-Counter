@@ -38,8 +38,8 @@ void scoringStage(void)
 {
     if (ring_buffer_num_items(smoothBuf) == windowSize)
     {
-        long diffLeft = 0;
-        long diffRight = 0;
+        int64_t diffLeft = 0;
+        int64_t diffRight = 0;
         data_point_t midpointData;
         ring_buffer_peek(smoothBuf, &midpointData, midpoint);
         data_point_t dataPoint;
