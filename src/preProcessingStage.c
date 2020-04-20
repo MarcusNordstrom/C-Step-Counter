@@ -24,17 +24,14 @@ SOFTWARE.
 #include "preProcessingStage.h"
 #include "filterStage.h"
 #include "utils.h"
+/*Uncomment this line to disable interpolation*/
+//#define STEP_INTERPOLATION_DISABLE
 static ring_buffer_t *rawBuf;
 static ring_buffer_t *ppBuf;
 static int8_t interpolationTime = 10;       //in ms
-static int16_t timeScalingFactor = 1; //(100000 for validation data) 1000000
+static int16_t timeScalingFactor = 1; //100000 for validation data or 1000000 for optimisation data (oxford-step-counter dataset)
 static int32_t startTime = -1;
 static int16_t interpolationCount = 0;
-
-//static inline long labs(long num)
-//{
-//    return (num < 0) ? -num : num;
-//}
 
 void initPreProcessStage(ring_buffer_t *rawBufIn, ring_buffer_t *ppBufIn)
 {
@@ -63,6 +60,10 @@ void preProcessSample(int64_t time, int32_t x, int32_t y, int32_t z)
     data_point_t dataPoint;
     dataPoint.time = (time - startTime) / timeScalingFactor;
     dataPoint.magnitude = magnitude;
+#ifdef STEP_INTERPOLATION_DISABLE
+    ring_buffer_queue(ppBuf, dataPoint);
+    filterStage();
+#else
     ring_buffer_queue(rawBuf, dataPoint);
     if (ring_buffer_num_items(rawBuf) >= 2)
     {
@@ -85,6 +86,7 @@ void preProcessSample(int64_t time, int32_t x, int32_t y, int32_t z)
         data_point_t dataPoint;
         ring_buffer_dequeue(rawBuf, &dataPoint);
     }
+#endif
 }
 
 void resetPreProcess(void)

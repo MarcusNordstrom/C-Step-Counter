@@ -28,7 +28,7 @@ SOFTWARE.
 /**
     Initializes all buffers and everything the algorithm needs
 */
-void initAlgo();
+void initAlgo(void);
 
 /**
     This function takes the raw accelerometry data and computes the entire algorithm
