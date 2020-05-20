@@ -25,8 +25,8 @@ SOFTWARE.
 #include "detectionStage.h"
 static ring_buffer_t *smoothBuf;
 static ring_buffer_t *peakScoreBuf;
-static ring_buffer_size_t windowSize = 35;
-static ring_buffer_size_t midpoint = 17; //half of size
+static ring_buffer_size_t windowSize = 40;
+static ring_buffer_size_t midpoint = 20; //half of size
 
 void initScoringStage(ring_buffer_t *smoothBufIn, ring_buffer_t *peakScoreBufIn)
 {
